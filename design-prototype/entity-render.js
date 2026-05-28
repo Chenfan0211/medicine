@@ -5,10 +5,16 @@ const DYNAMIC_PAGES = new Set([
   'sys-user', 'sys-role', 'sys-dict', 'sys-oper-log', 'sys-login-log',
   'prd-brand', 'prd-spu', 'prd-sku',
   'inv-stock', 'inv-log', 'inv-check', 'inv-transfer', 'inv-inbound', 'inv-expiry',
-  'ord-list', 'ord-after-sale', 'sto-list',
+  'ord-list', 'ord-after-sale', 'ord-channel-pool', 'ord-merge', 'ord-wave-strategy',
+  'ord-wave', 'ord-pick-ship', 'ord-ship-addr', 'sto-list',
   'chn-store-map', 'chn-product-map', 'chn-sync', 'chn-sync-log',
   'mem-list', 'mem-level', 'mem-point', 'mem-coupon',
   'pur-supplier', 'pur-order', 'pur-return',
+  'm1-contract', 'm1-rebate-rule', 'm1-po-approve', 'm1-inbound-reg', 'm1-invoice',
+  'm1-three-match', 'm1-statement', 'm1-supplier-portal', 'm1-rebate-ledger',
+  'm2-sales-data', 'm2-suggestion', 'm2-supplier-priority',
+  'm3-platform-price', 'm3-platform-shelf', 'm3-inv-center', 'm3-inv-platform-diff',
+  'm4-data-perm', 'm4-notify', 'm4-backup',
   'fin-bill', 'fin-reconcile', 'fin-settlement',
   'rx-pending', 'rx-list', 'rx-log', 'del-list',
 ]);
@@ -47,6 +53,10 @@ const EntityRender = (() => {
   }
 
   function buildRows(pageId) {
+    if (typeof Phase1Render !== 'undefined') {
+      const p1 = Phase1Render.buildRows(pageId);
+      if (p1) return p1;
+    }
     if (!DYNAMIC_PAGES.has(pageId)) return null;
     const s = DataStore.getState();
     const f = DataStore.getFilters(pageId);
@@ -348,6 +358,71 @@ const EntityRender = (() => {
           `¥${st.commission.toLocaleString()}`, `¥${st.deliveryFee.toLocaleString()}`, `¥${st.settleAmount.toLocaleString()}`,
           tag(st.status, st.status === '已结算' ? 'on' : 'pending'),
           actions(st.status === '待确认' ? ['详情', '确认'] : ['详情']),
+        ]));
+      case 'ord-channel-pool': {
+        let list = (s.channelOrders || []).filter((c) => {
+          if (f['渠道'] && f['渠道'] !== '全部' && c.channel !== f['渠道']) return false;
+          if (f['门店'] && !String(f['门店']).includes('全部') && c.storeName !== f['门店']) return false;
+          if (f['状态'] && f['状态'] !== '全部' && c.fulfillStatus !== f['状态']) return false;
+          return true;
+        });
+        return pack(pageId, list, (c) => tr('channelOrders', c.id, [
+          c.id, link(c.orderId), tag(c.channel, DataStore.channelTag[c.channel] || 'meituan'), c.storeName,
+          c.receiver, DataStore.maskPhone(c.phone), c.skuSummary, `¥${c.amount.toFixed(2)}`,
+          tag(c.fulfillStatus, c.locked ? 'pending' : 'on'),
+          actions(c.locked ? ['详情', '解锁', '合单'] : c.waveId ? ['详情'] : ['详情', '锁单', '合单']),
+        ]));
+      }
+      case 'ord-merge':
+        return pack(pageId, (s.mergedGroups || []).filter((g) => !f['状态'] || f['状态'] === '全部' || g.status === f['状态']), (g) => tr('mergedGroups', g.id, [
+          g.id, DataStore.maskPhone(g.phone), g.address, g.skuSummary, g.orderCount,
+          tag(g.status, g.status === '待波次' ? 'pending' : 'on'), g.createdAt,
+          actions(g.status === '待波次' ? ['详情', '合单波次生成'] : ['详情']),
+        ]));
+      case 'ord-wave-strategy':
+        return pack(pageId, s.waveStrategies || [], (ws) => tr('waveStrategies', ws.id, [
+          ws.name, ws.waveType, ws.ruleDesc, ws.maxOrders, ws.sort,
+          tag(ws.enabled ? '启用' : '停用', ws.enabled ? 'on' : 'off'),
+          actions(['编辑', '生成波次', ws.enabled ? '停用' : '启用']),
+        ]));
+      case 'ord-wave': {
+        const tab = s.waveTab || '全部';
+        let list = (s.waves || []).filter((w) => tab === '全部' || w.status === tab);
+        if (f['波次号']) list = list.filter((w) => w.waveNo.includes(f['波次号']));
+        if (f['门店'] && !String(f['门店']).includes('全部')) list = list.filter((w) => w.storeName === f['门店']);
+        if (f['渠道'] && f['渠道'] !== '全部') list = list.filter((w) => w.channel === f['渠道']);
+        return pack(pageId, list, (w) => tr('waves', w.id, [
+          w.waveNo, w.waveType, w.storeName, tag(w.channel, DataStore.channelTag[w.channel] || 'meituan'),
+          w.orderCount, tag(w.erpStockOk ? '充足' : '不足', w.erpStockOk ? 'on' : 'off'),
+          tag(w.status, w.status === '已出库' ? 'done' : w.status === '异常' ? 'off' : 'pending'),
+          w.createdAt, actions(['详情', '请货', '查看明细'].filter((a) => w.status !== '已出库' || a === '详情')),
+        ]));
+      }
+      case 'ord-pick-ship': {
+        let list = (s.waveItems || []).filter((wi) => {
+          if (f['订单号'] && !wi.orderId.includes(f['订单号'])) return false;
+          if (f['状态'] && f['状态'] !== '全部' && wi.status !== f['状态']) return false;
+          return true;
+        });
+        return pack(pageId, list, (wi) => {
+          const acts = ['详情'];
+          if (wi.status === '未请货') acts.push('请货', '回库');
+          else if (wi.status === '已请货') acts.push('确认拣货', '回库');
+          else if (wi.status === '已拣货') acts.push('生成快递单', '打包', '打印面单', '出库');
+          else if (wi.status === '异常') acts.push('回库');
+          return tr('waveItems', wi.id, [
+            wi.waveId, link(wi.orderId), tag(wi.channel, DataStore.channelTag[wi.channel] || 'meituan'),
+            wi.storeName, wi.skuName, wi.requestQty, wi.pickedQty, wi.waybillNo || '—',
+            tag(wi.status, wi.status === '已出库' ? 'done' : wi.status === '异常' ? 'off' : 'pending'),
+            actions(acts),
+          ]);
+        });
+      }
+      case 'ord-ship-addr':
+        return pack(pageId, s.shipAddresses || [], (a) => tr('shipAddresses', a.id, [
+          a.storeName, a.contact, a.phone, a.province, a.city, a.address,
+          tag(a.isDefault ? '是' : '否', a.isDefault ? 'on' : 'off'),
+          tag(a.status, 'on'), actions(['编辑', '设为默认', '删除']),
         ]));
       default:
         return null;

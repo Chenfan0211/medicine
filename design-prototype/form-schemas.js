@@ -17,7 +17,8 @@ const FormSchemas = (() => {
     settlements: '结算单', channelStoreMaps: '门店映射', channelProductMaps: '商品映射',
     memberLevels: '会员等级', loginLogs: '登录日志', operLogs: '操作日志',
     channelSyncLogs: '同步日志', channelSyncTasks: '同步任务', stockLogs: '库存流水',
-    pointLogs: '积分流水', rxLogs: '审核日志',
+    channelOrders: '渠道订单', mergedGroups: '合单组', waveStrategies: '波次策略',
+    waves: '波次', waveItems: '波次明细', shipAddresses: '发货地址',
   };
 
   const FIELD_LABELS = {
@@ -47,6 +48,10 @@ const FormSchemas = (() => {
     balance: '剩余积分', remark: '备注', menuType2: '类型', refNo: '关联单号',
     batchNo: '批号', expiryDate: '有效期', qty: '可用库存', lockQty: '锁定数量',
     warnThreshold: '预警阈值', operator: '操作人', afterQty: '变动后库存',
+    fulfillStatus: '履约状态', skuSummary: '商品摘要', locked: '是否锁单', pulledAt: '拉取时间',
+    mergeGroupId: '合单组', waveId: '波次号', waveNo: '波次号', waveType: '波次类型',
+    ruleDesc: '规则说明', maxOrders: '每批上限', erpStockOk: 'ERP库存', requestQty: '请货数量',
+    pickedQty: '拣货数量', waybillNo: '快递单号', province: '省份', isDefault: '是否默认',
   };
 
   const SCHEMAS = {
@@ -250,6 +255,59 @@ const FormSchemas = (() => {
       { key: 'settleAmount', label: '应结金额', type: 'number' },
       { key: 'status', label: '状态', type: 'select', options: ['待确认', '已结算'] },
     ],
+    channelOrders: [
+      { key: 'orderId', label: '平台订单号', readonly: true },
+      { key: 'channel', label: '渠道', readonly: true },
+      { key: 'storeName', label: '门店', readonly: true },
+      { key: 'receiver', label: '收货人' },
+      { key: 'phone', label: '手机号', type: 'tel' },
+      { key: 'address', label: '收货地址' },
+      { key: 'skuSummary', label: '商品摘要', readonly: true },
+      { key: 'amount', label: '金额', readonly: true },
+      { key: 'fulfillStatus', label: '履约状态', type: 'select', options: ['已拉取', '已锁单', '已合单', '波次中'] },
+    ],
+    waveStrategies: [
+      { key: 'name', label: '策略名称', required: true },
+      { key: 'waveType', label: '波次类型', type: 'select', options: ['普通', '合单'] },
+      { key: 'ruleDesc', label: '规则说明', type: 'textarea' },
+      { key: 'maxOrders', label: '每批上限', type: 'number' },
+      { key: 'sort', label: '排序', type: 'number' },
+      { key: 'enabled', label: '启用', type: 'select', options: ['是', '否'] },
+    ],
+    waves: [
+      { key: 'waveNo', label: '波次号', readonly: true },
+      { key: 'waveType', label: '波次类型', readonly: true },
+      { key: 'storeName', label: '门店', readonly: true },
+      { key: 'channel', label: '渠道', readonly: true },
+      { key: 'orderCount', label: '订单数', readonly: true },
+      { key: 'status', label: '波次状态', type: 'select', options: ['未请货', '已请货', '已拣货', '已出库', '异常'] },
+    ],
+    waveItems: [
+      { key: 'waveId', label: '波次号', readonly: true },
+      { key: 'orderId', label: '订单号', readonly: true },
+      { key: 'skuName', label: '商品', readonly: true },
+      { key: 'requestQty', label: '请货数量', type: 'number' },
+      { key: 'pickedQty', label: '拣货数量', type: 'number', readonly: true },
+      { key: 'waybillNo', label: '快递单号', readonly: true },
+      { key: 'status', label: '状态', type: 'select', options: ['未请货', '已请货', '已拣货', '已出库', '异常', '已回库'] },
+    ],
+    shipAddresses: [
+      { key: 'storeName', label: '门店', type: 'select', options: () => DataStore.getState().stores.map((s) => s.name) },
+      { key: 'contact', label: '联系人', required: true },
+      { key: 'phone', label: '电话', type: 'tel' },
+      { key: 'province', label: '省份' },
+      { key: 'city', label: '城市' },
+      { key: 'address', label: '详细地址' },
+      { key: 'isDefault', label: '默认地址', type: 'select', options: ['是', '否'] },
+      { key: 'status', label: '状态', type: 'select', options: ['启用', '停用'] },
+    ],
+    mergedGroups: [
+      { key: 'phone', label: '手机号', readonly: true },
+      { key: 'address', label: '收货地址', readonly: true },
+      { key: 'skuSummary', label: '商品摘要', readonly: true },
+      { key: 'orderCount', label: '合并单数', readonly: true },
+      { key: 'status', label: '状态', type: 'select', options: ['待波次', '已入波次'] },
+    ],
   };
 
   /** 新增表单的快捷 schema（按页面） */
@@ -258,7 +316,7 @@ const FormSchemas = (() => {
     'prd-brand': 'brands', 'prd-spu': 'spus', 'prd-sku': 'skus', 'sto-list': 'stores',
     'mem-coupon': 'coupons', 'pur-supplier': 'suppliers', 'inv-check': 'inventoryChecks',
     'inv-transfer': 'transfers', 'inv-inbound': 'inbounds', 'pur-order': 'purchaseOrders',
-    'pur-return': 'purchaseReturns', 'mem-level': 'memberLevels',
+    'pur-return': 'purchaseReturns', 'mem-level': 'memberLevels', 'ord-ship-addr': 'shipAddresses',
   };
 
   function labelOf(key) {
@@ -272,6 +330,8 @@ const FormSchemas = (() => {
   function displayValue(key, val) {
     if (val === null || val === undefined) return '—';
     if (key === 'perm') return DataStore.getDictLabel('sys_perm', val);
+    if (key === 'enabled') return val === true || val === '是' ? '是' : '否';
+    if (key === 'isDefault') return val === true || val === '是' ? '是' : '否';
     if (key === 'isRx') return val === true || val === '是' ? '是' : '否';
     if (key === 'rxSupport') return val === true || val === '支持' ? '支持' : '不支持';
     if (key === 'success') return val ? '成功' : '失败';
@@ -364,6 +424,8 @@ const FormSchemas = (() => {
       if (v === undefined) return;
       if (f.key === 'isRx') patch.isRx = v === '是';
       else if (f.key === 'rxSupport') patch.rxSupport = v === '支持';
+      else if (f.key === 'enabled') patch.enabled = v === '是';
+      else if (f.key === 'isDefault') patch.isDefault = v === '是';
       else if (f.key === 'price' || f.key === 'amount' || f.key === 'threshold' || f.key === 'points') {
         patch[f.key] = parseFloat(v) || 0;
       } else if (f.type === 'number') patch[f.key] = parseInt(v, 10) || 0;
@@ -374,6 +436,8 @@ const FormSchemas = (() => {
       if (!f) return;
       if (f.key === 'isRx') patch.isRx = v === '是';
       else if (f.key === 'rxSupport') patch.rxSupport = v === '支持';
+      else if (f.key === 'enabled') patch.enabled = v === '是';
+      else if (f.key === 'isDefault') patch.isDefault = v === '是';
       else if (f.type === 'number') patch[f.key] = parseFloat(v) || parseInt(v, 10) || 0;
       else patch[f.key] = v;
     });
@@ -398,6 +462,7 @@ const FormSchemas = (() => {
       spus: { name: '', category: '感冒用药', brand: '', skuCount: 0, status: '上架' },
       suppliers: { name: '', contact: '', phone: '', certExpiry: '', status: '合作中', skuCount: 0 },
       memberLevels: { name: '', code: '', threshold: 0, discount: '无', pointRate: '1x', sort: 1, status: '启用' },
+      shipAddresses: { storeName: '朝阳店', contact: '', phone: '', province: '北京市', city: '朝阳区', address: '', isDefault: false, status: '启用' },
     };
     return defaults[entity] || {};
   }

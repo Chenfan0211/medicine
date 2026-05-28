@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智合医药 ERP 全流程思维导图（详细版）</title>
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --card: #fff;
+      --border: #e2e5ea;
+      --text: #1a1d21;
+      --muted: #5c6570;
+      --accent: #2563eb;
+      --accent-bg: #eff6ff;
+      --purple: #7c3aed;
+      --green: #059669;
+      --orange: #d97706;
+      --pink: #db2777;
+      --radius: 8px;
+      --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 24px 20px 48px; }
+    h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: var(--muted); margin-bottom: 20px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .tab {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all .15s;
+    }
+    .tab:hover { border-color: var(--accent); }
+    .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .callout {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #f0f2f5;
+      margin-bottom: 20px;
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .callout p { color: var(--muted); font-size: 13px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .card-h {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-b { padding: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+    .badge-warn { background: #fef3c7; color: #b45309; }
+    .badge-ok { background: #d1fae5; color: #047857; }
+    .badge-neutral { background: #f0f2f5; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: #f8f9fb; font-weight: 600; white-space: nowrap; }
+    tr:nth-child(even) td { background: #fafbfc; }
+    .step-list { list-style: none; }
+    .step-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+    .num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: #f0f2f5;
+      color: var(--muted);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    .flow-v { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 8px 0; overflow-x: auto; }
+    .flow-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 4px 0; }
+    .flow-node {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #f8f9fb;
+      font-size: 12px;
+      text-align: center;
+      min-width: 100px;
+      max-width: 160px;
+    }
+    .flow-node.highlight { border-color: var(--accent); background: var(--accent-bg); }
+    .flow-arrow { color: var(--muted); font-size: 18px; line-height: 1; padding: 2px 0; }
+    .flow-label { font-size: 11px; color: var(--muted); margin: 8px 0 4px; text-align: center; width: 100%; }
+    .status-chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .status-pill {
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: #f0f2f5;
+      font-size: 12px;
+    }
+    .arrow-sm { color: var(--muted); }
+    details { margin-bottom: 8px; }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 8px 0;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: "▸ "; color: var(--muted); }
+    details[open] summary::before { content: "▾ "; }
+    .branch-items { padding-left: 20px; border-left: 2px solid var(--border); margin: 8px 0 12px 8px; }
+    .branch-items li { font-size: 13px; padding: 3px 0; color: var(--text); }
+    .center-title { text-align: center; padding: 24px; }
+    .center-title h2 { font-size: 1.4rem; margin: 8px 0; }
+    .color-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; }
+    .dot-blue { background: var(--accent); }
+    .dot-purple { background: var(--purple); }
+    .dot-green { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-gray { background: #9ca3af; }
+    .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 32px; }
+    @media print {
+      .tabs { display: none; }
+      .panel { display: block !important; page-break-before: always; }
+      .panel:first-of-type { page-break-before: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>智合医药 ERP 全流程思维导图（详细版）</h1>
+    <p class="subtitle">含美团 / 饿了么 / 京东 三方订单拉取 → 渠道订单池 → 锁单 / 合单 / 波次 → 请货出库 → ERP 回传</p>
+
+    <div class="tabs" id="tabs"></div>
+
+    <div id="panel-channel-pull" class="panel"></div>
+    <div id="panel-fulfill-detail" class="panel"></div>
+    <div id="panel-overview" class="panel"></div>
+    <div id="panel-e2e" class="panel"></div>
+    <div id="panel-m1" class="panel"></div>
+    <div id="panel-m2" class="panel"></div>
+    <div id="panel-m3" class="panel"></div>
+
+    <p class="footer-note">智合医药即时零售 ERP + 中台 · UI 原型 v4.0 · 一期合同 62 项 · 生成于 docs/zhihe-erp-mindmap.html</p>
+  </div>
+
+  <script>
+    const VIEWS = [
+      { key: "channel-pull", label: "三方订单拉取" },
+      { key: "fulfill-detail", label: "履约全流程" },
+      { key: "overview", label: "全局思维导图" },
+      { key: "e2e", label: "端到端主链路" },
+      { key: "m1", label: "M1 采购对账" },
+      { key: "m2", label: "M2 门店补货" },
+      { key: "m3", label: "M3 平台库存" },
+    ];
+
+    const PULL_TRIGGERS = [
+      { trigger: "平台回调推送", page: "后台 API", button: "—", channel: "美团/饿了么/京东", freq: "实时", desc: "平台 POST 至 /api/v1/channel/{platform}/callback，中台验签后自动写入订单池" },
+      { trigger: "定时轮询", page: "后台定时任务", button: "—", channel: "三平台", freq: "每 1~5 分钟", desc: "按已映射门店调用 order.list 接口，拉取未处理订单（回调丢失兜底）" },
+      { trigger: "手动·拉取美团", page: "ord-channel-pool", button: "拉取美团", channel: "美团", freq: "按需", desc: "DataStore.pullChannelOrders('美团') → 写入 channelOrders，状态=已拉取" },
+      { trigger: "手动·拉取饿了么", page: "ord-channel-pool", button: "拉取饿了么", channel: "饿了么", freq: "按需", desc: "DataStore.pullChannelOrders('饿了么')" },
+      { trigger: "手动·拉取京东", page: "ord-channel-pool", button: "拉取京东", channel: "京东", freq: "按需", desc: "DataStore.pullChannelOrders('京东')" },
+      { trigger: "快捷·拉取三渠道", page: "ord-workflow", button: "拉取三渠道订单", channel: "全部", freq: "按需", desc: "pull-all → pullChannelOrders('全部')，美团+饿了么+京东各 1 条" },
+    ];
+
+    const ORDER_FIELD_MAP = [
+      ["平台订单号", "order_id / orderId", "orderId", "ORD202605280001", "去重键，重复拉取跳过"],
+      ["渠道", "channel / platform", "channel", "美团 / 饿了么 / 京东", "tag 着色 meituan/eleme/jd"],
+      ["门店", "poi_id → 映射", "storeName", "朝阳店", "需 chn-store-map 已映射"],
+      ["收货人", "recipient_name", "receiver", "张伟", "脱敏展示"],
+      ["手机号", "recipient_phone", "phone", "13812345678", "合单匹配键之一"],
+      ["地址", "recipient_address", "address", "朝阳区建国路100号", "合单匹配键之一"],
+      ["商品摘要", "items[].name × qty", "skuSummary", "阿莫西林胶囊×2", "列表展示"],
+      ["SKU", "items[].sku_id → 映射", "skuId", "SKU10086001", "需 chn-product-map 已映射"],
+      ["数量", "items[].quantity", "qty", "2", "扣减库存依据"],
+      ["金额", "total_amount", "amount", "128.50", "元"],
+      ["履约状态", "—", "fulfillStatus", "已拉取", "初始状态"],
+      ["拉取时间", "—", "pulledAt", "2026-05-28 10:32", "nowStr()"],
+      ["锁单标记", "—", "locked", "false", "锁单后 → 已锁单"],
+      ["合单组", "—", "mergeGroupId", "MG001 / null", "自动合单后赋值"],
+      ["波次", "—", "waveId", "WV… / null", "生成波次后赋值"],
+    ];
+
+    const PULL_INTERNAL_STEPS = [
+      ["①", "读取渠道凭证", "从 channelConfig 取 App Key/Secret（美团 meituan / 饿了么 eleme / 京东 jd）"],
+      ["②", "校验前置条件", "渠道已启用 · 门店已映射 · 商品已映射 · 库存已同步至平台"],
+      ["③", "调用平台订单 API", "美团 order/get · 饿了么 order.detail · 京东 order/es/query（或接收回调 payload）"],
+      ["④", "解析 & 标准化", "统一为 channelOrders 结构；平台 SKU → 中台 skuId；平台门店 → storeName"],
+      ["⑤", "去重校验", "orderId 已存在于 channelOrders 则跳过，避免重复入池"],
+      ["⑥", "写入渠道订单池", "unshift 至 state.channelOrders，fulfillStatus = 已拉取，记录 pulledAt"],
+      ["⑦", "预占/扣减库存", "真实库存 可用→预占；串行队列防超卖；30 秒内反向推送另两平台"],
+      ["⑧", "写操作日志", "addOperLog('订单履约', '拉取{渠道}订单 N 条')；localStorage 持久化"],
+    ];
+
+    const PULL_BRANCHES = [
+      ["门店未映射", "标记异常 · 告警运营 · 暂不参与波次", "chn-store-map"],
+      ["SKU 未映射", "标记异常 · 跳转商品映射 · 人工处理", "chn-product-map"],
+      ["库存不足", "标记库存预警 · 可选自动下架该平台 SKU", "m3-real-stock"],
+      ["重复订单", "按 orderId 去重，不重复写入", "—"],
+      ["平台取消/退款", "回调更新状态 · 若已预占则释放库存", "ord-channel-pool"],
+      ["拉取成功", "进入渠道订单池 → 可锁单/合单/生成波次", "ord-workflow"],
+    ];
+
+    const CHANNEL_PULL_STAGES = [
+      { stage: "1. 平台对接准备", ui: "渠道配置 / 门店映射 / 商品映射", steps: [
+        "配置美团闪购 App Key / Secret / 回调 URL",
+        "配置饿了么零售开放平台凭证与回调",
+        "配置京东到家开放平台凭证与回调",
+        "中台门店 ↔ 平台门店 ID 映射（chn-store-map）",
+        "中台 SKU ↔ 平台商品 ID 映射（chn-product-map）",
+        "测试连接 + 同步门店/商品基础数据",
+      ]},
+      { stage: "2. 订单数据拉取（M3-4-1）", ui: "渠道订单池 ord-channel-pool", steps: [
+        "方式A：平台推送 — 美团/饿了么/京东订单状态变更回调到中台",
+        "方式B：定时轮询 — 按门店定时拉取未处理订单（兜底）",
+        "方式C：手动拉取 — 工具栏「拉取美团」「拉取饿了么」「拉取京东」",
+        "方式D：一键拉取 — 履约流程页「拉取三渠道订单」",
+        "解析订单：平台订单号、渠道、门店、收货人、手机、地址、SKU、数量、金额",
+        "写入「渠道订单池」，履约状态 = 已拉取",
+        "校验：门店已映射？SKU 已映射？库存是否充足？",
+      ]},
+      { stage: "3. 拉取后库存处理（M3-4-2/4-3）", ui: "真实库存 / 库存同步配置", steps: [
+        "订单入池后：预占/扣减中台真实库存（可用 → 预占）",
+        "串行扣减：同一门店同一 SKU 排队处理，防并发超卖",
+        "反向同步：扣减后立即推送库存至另外两个平台（30秒内）",
+        "推送库存 = 可用库存 × (1 - 安全冗余5%)",
+        "每30分钟与三平台库存对账，差异自动修正并告警",
+      ]},
+      { stage: "4. 进入履约作业链", ui: "履约流程 ord-workflow", steps: [
+        "渠道订单池 → 可选锁单（暂不发，不参与波次）",
+        "可选合单：相同手机号 + 相同地址 + 相同商品",
+        "波次策略配置 → 普通波次 / 合单波次生成",
+        "波次管理（未请货）→ 请货（可调数量，调 ERP）",
+        "拣货成功 → 已拣货；异常/取消 → 回库",
+        "发货地址 → 生成快递单 → 打包 → 打印面单 → 出库",
+        "出库后定时任务回传 ERP 生成出库单/售后记录",
+      ]},
+    ];
+
+    const FULFILL_PIPELINE = [
+      { group: "起点：拉取三方订单", items: [
+        ["1.1", "拉取订单信息", "从美团/饿了么/京东获取新订单，进入渠道订单池", "ord-channel-pool", "—"],
+        ["1.2", "拉取美团", "单渠道手动拉取或回调自动写入", "工具栏", "美团"],
+        ["1.3", "拉取饿了么", "单渠道手动拉取或回调自动写入", "工具栏", "饿了么"],
+        ["1.4", "拉取京东", "单渠道手动拉取或回调自动写入", "工具栏", "京东"],
+        ["1.5", "拉取三渠道", "履约流程页快捷操作，一次拉取三个平台", "ord-workflow", "—"],
+      ]},
+      { group: "分支处理（可并行）", items: [
+        ["2.1", "锁单", "暂时不发货的订单锁定，不参与后续波次生成", "ord-channel-pool 行操作", "锁单/解锁"],
+        ["2.2", "订单合单", "相同手机号 + 相同地址 + 相同商品 → 合并为一组", "ord-merge", "自动合单"],
+        ["2.3", "合单波次生成", "已合单组单独生成「合单类型」波次", "ord-merge", "—"],
+      ]},
+      { group: "波次策略与生成", items: [
+        ["3.1", "波次策略", "自定义规则：同门店+同渠道、每批上限等", "ord-wave-strategy", "—"],
+        ["3.2", "波次生成", "从订单池取未锁定/未合单订单，校验 ERP 库存是否充足", "ord-wave", "生成波次"],
+        ["3.3", "波次管理·未请货", "生成后数据进入「未请货」Tab，等待请货", "ord-wave Tab", "—"],
+      ]},
+      { group: "请货与拣货", items: [
+        ["4.1", "请货", "调用 ERP 接口；可手动修改请货数量后提交", "ord-pick-ship", "请货抽屉"],
+        ["4.2", "ERP 拣货回传", "ERP 返回拣货是否成功", "系统接口", "—"],
+        ["4.3", "确认拣货 → 已拣货", "拣货成功，库存扣减，进入已拣货待发货", "ord-pick-ship", "确认拣货"],
+        ["4.4", "异常 → 回库", "用户取消/库存异常：已分配库存释放回库", "ord-pick-ship", "回库"],
+      ]},
+      { group: "发货与出库", items: [
+        ["5.1", "发货地址管理", "维护发件人地址，生成面单时使用", "ord-ship-addr", "—"],
+        ["5.2", "生成快递单", "已拣货订单生成物流单号", "ord-pick-ship", "—"],
+        ["5.3", "打包", "仓库打包作业确认", "ord-pick-ship", "—"],
+        ["5.4", "打印面单", "打印快递面单（需先有快递单号）", "ord-pick-ship", "—"],
+        ["5.5", "出库", "确认出库，订单状态 → 配送中", "ord-pick-ship", "出库"],
+        ["5.6", "定时回传 ERP", "出库后定时任务推送 ERP 生成出库单", "后台任务", "—"],
+      ]},
+    ];
+
+    const MODULES = [
+      { id: "channel", dot: "dot-blue", title: "三方订单拉取与回传（M3-4 + 履约）", branches: [
+        { title: "拉取前置条件", items: ["渠道配置（三平台凭证）", "门店映射", "商品映射", "库存已同步至平台"] },
+        { title: "拉取方式", items: ["平台回调推送（实时）", "定时轮询拉取", "手动：拉取美团/饿了么/京东", "快捷：拉取三渠道订单"] },
+        { title: "拉取后处理", items: ["写入渠道订单池", "预占/扣减真实库存", "串行防超卖", "反向同步另两平台库存", "30分钟库存对账"] },
+        { title: "履约后续", items: CHANNEL_PULL_STAGES[3].steps },
+      ]},
+      { id: "m1", dot: "dot-purple", title: "M1 采购对账自动化（18项）", branches: [
+        { title: "供应商与合同", items: ["供应商档案/GSP预警", "合同管理/续签", "合同条款快照", "返利规则5种"] },
+        { title: "采购与入库", items: ["采购创建/Excel", "分级审批5万/20万", "入库登记/批号效期", "分次入库", "发票登记"] },
+        { title: "自动对账", items: ["三单比对", "对账单生成", "差异分级绿黄红", "推送供应商"] },
+        { title: "供应商门户与返利", items: ["在线登录/查看", "确认/差异反馈", "应返/实返/预警"] },
+      ]},
+      { id: "m2", dot: "dot-green", title: "M2 门店补货计划（12项）", branches: [
+        { title: "数据基础", items: ["门店档案", "三平台销量日归集", "库存归集可用/预占/在途"] },
+        { title: "补货引擎", items: ["销量预测7+30+同比", "安全库存95%", "补货建议门店×SKU", "建议单审核"] },
+        { title: "转采购", items: ["供应商优先级", "自动最优匹配", "备选切换", "一键转采购/拆单", "套用合同"] },
+      ]},
+      { id: "m3", dot: "dot-orange", title: "M3 三平台商品库存（16项）", branches: [
+        { title: "商品主数据", items: ["SPU/SKU", "医药强校验", "Excel导入", "平台独立定价", "独立上下架", "映射管理"] },
+        { title: "库存中心", items: ["真实库存视图", "30秒同步三平台", "5%安全冗余", "流水台账", "盘点"] },
+        { title: "订单与防超卖", items: ["平台订单自动回传/拉取", "自动扣减+反向同步", "串行扣减", "30分钟对账"] },
+      ]},
+      { id: "m4", dot: "dot-gray", title: "M4 基础平台（10项）", branches: [
+        { title: "权限审计", items: ["组织架构", "角色权限6种", "数据权限", "操作日志"] },
+        { title: "运营支撑", items: ["消息通知", "采购/运营看板", "导出", "参数/SSO/备份"] },
+      ]},
+    ];
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function table(headers, rows) {
+      return `<table><thead><tr>${headers.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${
+        rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")
+      }</tbody></table>`;
+    }
+
+    function stepList(items) {
+      return `<ul class="step-list">${items.map((t, i) =>
+        `<li><span class="num">${i + 1}</span><span>${esc(t)}</span></li>`
+      ).join("")}</ul>`;
+    }
+
+    function card(title, body, badge) {
+      const badgeHtml = badge ? `<span class="badge">${esc(badge)}</span>` : "";
+      return `<div class="card"><div class="card-h"><span>${esc(title)}</span>${badgeHtml}</div><div class="card-b">${body}</div></div>`;
+    }
+
+    function flowVertical(layers) {
+      return `<div class="flow-v">${layers.map((layer, i) => {
+        const nodes = Array.isArray(layer) ? layer : [layer];
+        const row = `<div class="flow-row">${nodes.map(n =>
+          `<div class="flow-node${n.highlight ? " highlight" : ""}">${esc(n.label || n)}</div>`
+        ).join("")}</div>`;
+        const arrow = i < layers.length - 1 ? `<div class="flow-arrow">↓</div>` : "";
+        return (layer.label ? `<div class="flow-label">${esc(layer.label)}</div>` : "") + row + arrow;
+      }).join("")}</div>`;
+    }
+
+    function moduleCard(mod) {
+      const branches = mod.branches.map(b => `
+        <details>
+          <summary><span class="color-dot ${mod.dot}"></span>${esc(b.title)} (${b.items.length})</summary>
+          <ol class="branch-items">${b.items.map(it => `<li>${esc(it)}</li>`).join("")}</ol>
+        </details>
+      `).join("");
+      return card(mod.title, branches);
+    }
+
+    function renderChannelPull() {
+      const pullFlow = flowVertical([
+        { label: "前置配置" },
+        [{ label: "渠道配置" }, { label: "门店映射" }, { label: "商品映射" }],
+        { label: "四种拉取入口" },
+        [{ label: "美团回调", highlight: true }, { label: "饿了么回调", highlight: true }, { label: "京东回调", highlight: true }],
+        [{ label: "定时轮询" }, { label: "拉取美团" }, { label: "拉取饿了么" }, { label: "拉取京东" }, { label: "拉取三渠道" }],
+        { label: "平台 API" },
+        [{ label: "美团 order API" }, { label: "饿了么 order API" }, { label: "京东 order API" }],
+        [{ label: "解析标准化" }, { label: "去重校验" }],
+        [{ label: "渠道订单池", highlight: true }],
+        [{ label: "扣减/同步库存" }],
+        [{ label: "履约作业链" }],
+      ]);
+
+      const fulfillFlow = flowVertical([
+        [{ label: "美团API/回调" }, { label: "饿了么API/回调" }, { label: "京东API/回调" }],
+        [{ label: "拉取订单信息" }],
+        [{ label: "渠道订单池", highlight: true }],
+        [{ label: "扣减/同步库存" }, { label: "锁单" }, { label: "订单合单" }],
+        [{ label: "波次策略" }, { label: "波次生成" }, { label: "合单波次生成" }],
+        [{ label: "未请货" }],
+        [{ label: "请货(可调数量)" }],
+        [{ label: "调ERP接口" }],
+        [{ label: "已拣货" }, { label: "回库" }],
+        [{ label: "发货地址" }, { label: "生成快递单" }, { label: "打包" }, { label: "打印面单" }],
+        [{ label: "出库" }],
+        [{ label: "回传ERP出库单" }],
+      ]);
+
+      return `
+        <div class="callout">
+          <strong>三方订单拉取 — 完整链路（重点）</strong>
+          <p>美团 / 饿了么 / 京东 订单通过 ①平台回调 ②定时轮询 ③手动拉取（渠道订单池工具栏）④一键拉取三渠道（履约流程页）四种方式进入「渠道订单池 ord-channel-pool」，经解析→去重→写库→扣减库存后，进入锁单→合单→波次→请货→出库履约链。</p>
+        </div>
+        ${card("三平台拉取数据流（回调 / 轮询 / 手动 / 一键）", pullFlow, "分渠道入口")}
+        <div class="grid-3">
+          ${card("美团闪购拉取", stepList([
+            "回调：POST /api/v1/channel/meituan/callback",
+            "手动：渠道订单池 →「拉取美团」",
+            "API：order/get · 验签 · 解析 items",
+            "映射：MT_POI → 门店 · MT_ITEM → SKU",
+            "写入：channelOrders · 状态=已拉取",
+          ]), "美团")}
+          ${card("饿了么零售拉取", stepList([
+            "推送：订单状态变更消息推送",
+            "手动：渠道订单池 →「拉取饿了么」",
+            "API：order.detail · 消息验签",
+            "映射：ELM_ → 门店 · ELM_ITEM → SKU",
+            "写入：channelOrders · 状态=已拉取",
+          ]), "饿了么")}
+          ${card("京东到家拉取", stepList([
+            "Webhook：新订单/取消事件",
+            "手动：渠道订单池 →「拉取京东」",
+            "API：order/es/query · Webhook 验签",
+            "映射：JD 门店/商品 ID → 中台",
+            "写入：channelOrders · 状态=已拉取",
+          ]), "京东")}
+        </div>
+        ${card("拉取触发入口对照（UI 按钮 → 代码 → 页面）", table(
+          ["触发方式", "页面 ID", "按钮/入口", "渠道", "频率", "说明"],
+          PULL_TRIGGERS.map(r => [r.trigger, r.page, r.button, r.channel, r.freq, r.desc])
+        ), "M3-4-1")}
+        ${card("拉取内部处理步骤（API → 订单池 → 库存）", table(["步骤", "节点", "详细说明"], PULL_INTERNAL_STEPS))}
+        ${card("平台原始字段 → 渠道订单池字段映射", table(["业务字段", "平台原始字段", "中台字段", "示例值", "备注"], ORDER_FIELD_MAP), "channelOrders")}
+        ${card("拉取后校验与异常分支", table(["触发条件", "系统动作", "跳转页面"], PULL_BRANCHES))}
+        ${card("三平台 → 拉取 → 订单池 → 履约（总流程图）", fulfillFlow, "履约总览")}
+        <div class="grid-2">
+          ${CHANNEL_PULL_STAGES.map(s => card(s.stage, stepList(s.steps) + `<p style="margin-top:10px;font-size:12px;color:var(--muted)">UI：${esc(s.ui)}</p>`)).join("")}
+        </div>
+        ${card("三平台拉取方式对照", table(
+          ["渠道", "对接方式", "手动拉取按钮", "自动回传", "配置页"],
+          [
+            ["美团闪购", "Open API + 订单回调", "拉取美团", "平台推送 → /channel/meituan/callback", "chn-config"],
+            ["饿了么零售", "Open API + 消息推送", "拉取饿了么", "订单状态变更推送", "chn-config"],
+            ["京东到家", "Open API + Webhook", "拉取京东", "新订单/取消事件推送", "chn-config"],
+          ]
+        ))}
+        ${card("菜单导航路径（原型 UI）", stepList([
+          "订单履约 → 渠道订单池（ord-channel-pool）— 拉取美团/饿了么/京东 · 锁单 · 自动合单 · 生成波次",
+          "订单履约 → 履约流程（ord-workflow）— 拉取三渠道订单 · pipeline 可视化 · 快捷操作",
+          "订单履约 → 渠道配置（chn-config）— 三平台 App Key/Secret/回调 URL",
+          "订单履约 → 门店映射（chn-store-map）— 中台门店 ↔ 平台门店 ID",
+          "订单履约 → 商品映射（chn-product-map）— 中台 SKU ↔ 平台商品 ID",
+          "M3 平台商品库存 → 真实库存 / 库存同步 — 拉取后扣减与反向同步",
+        ]))}
+      `;
+    }
+
+    function renderFulfillDetail() {
+      const groups = FULFILL_PIPELINE.map(g => card(g.group, table(
+        ["步骤", "节点", "说明", "UI 位置", "分支/操作"], g.items
+      ))).join("");
+      const status = `<div class="status-chain">
+        ${["已拉取","→","已锁单","→","已合单","→","波次中","→","未请货","→","已请货","→","已拣货","→","已出库"].map(s =>
+          s === "→" ? `<span class="arrow-sm">→</span>` : `<span class="status-pill">${esc(s)}</span>`
+        ).join("")}
+      </div>
+      <p style="font-size:13px;color:var(--muted)">异常分支：未请货/已请货/异常 → 回库 → 已回库；已拣货前需先生成快递单才能出库</p>`;
+      return `
+        <div class="callout">
+          <strong>履约全流程逐步明细</strong>
+          <p>从拉取三方订单开始，经锁单/合单/波次/请货/拣货/发货/出库，至 ERP 回传。与 UI「履约流程」页 pipeline 一一对应。</p>
+        </div>
+        ${groups}
+        ${card("状态流转（渠道订单 → 波次明细）", status)}
+      `;
+    }
+
+    function renderOverview() {
+      return `
+        <div class="card"><div class="card-b center-title">
+          <span class="badge">一期 62项 + 三方订单履约</span>
+          <h2>智合医药 ERP + 中台</h2>
+          <p style="color:var(--muted)">采购 · 补货 · 上架 · 库存 · 拉取三方订单 · 履约出库</p>
+        </div></div>
+        <div class="grid-2">${MODULES.map(moduleCard).join("")}</div>
+      `;
+    }
+
+    function renderE2E() {
+      const e2eFlow = flowVertical([
+        [{ label: "三平台对接配置" }],
+        [{ label: "门店/商品映射" }],
+        [{ label: "商品上架同步" }],
+        [{ label: "库存推送三平台" }],
+        [{ label: "拉取美团订单", highlight: true }, { label: "拉取饿了么订单", highlight: true }, { label: "拉取京东订单", highlight: true }],
+        [{ label: "渠道订单池", highlight: true }],
+        [{ label: "扣减/防超卖" }],
+        [{ label: "锁单/合单" }],
+        [{ label: "波次/请货/拣货" }],
+        [{ label: "快递/出库" }],
+        [{ label: "ERP出库回传" }],
+        { label: "— 进货补货链（并行） —" },
+        [{ label: "销量归集(M2)" }, { label: "补货建议" }, { label: "采购入库(M1)" }],
+        [{ label: "库存推送三平台（闭环）" }],
+      ]);
+      return `
+        <div class="callout">
+          <strong>端到端主链路（含三方拉单）</strong>
+          <p>平台对接 → 三渠道拉单 → 订单池 → 履约 → ERP；下方为进货补货闭环。</p>
+        </div>
+        ${card("跨模块流程（含美团/饿了么/京东拉取节点）", e2eFlow)}
+        <div class="grid-3">
+          ${card("三方拉单", stepList(["渠道配置", "门店/商品映射", "拉取美团", "拉取饿了么", "拉取京东", "渠道订单池", "扣减/同步库存"]))}
+          ${card("进货 M2→M1", stepList(["销量归集", "补货建议", "转采购", "入库", "三单比对"]))}
+          ${card("履约出库", stepList(["锁单/合单", "波次/请货", "拣货/回库", "快递/出库", "ERP回传"]))}
+        </div>
+      `;
+    }
+
+    function renderModule(id) {
+      const mod = MODULES.find(m => m.id === id);
+      return mod ? moduleCard(mod) : "";
+    }
+
+    const RENDERERS = {
+      "channel-pull": renderChannelPull,
+      "fulfill-detail": renderFulfillDetail,
+      "overview": renderOverview,
+      "e2e": renderE2E,
+      "m1": () => renderModule("m1"),
+      "m2": () => renderModule("m2"),
+      "m3": () => renderModule("m3"),
+    };
+
+    let currentView = "channel-pull";
+
+    function switchView(key) {
+      currentView = key;
+      document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.key === key));
+      document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + key));
+      location.hash = key;
+    }
+
+    function init() {
+      const tabsEl = document.getElementById("tabs");
+      VIEWS.forEach(v => {
+        const btn = document.createElement("button");
+        btn.className = "tab" + (v.key === currentView ? " active" : "");
+        btn.dataset.key = v.key;
+        btn.textContent = v.label;
+        btn.type = "button";
+        btn.addEventListener("click", () => switchView(v.key));
+        tabsEl.appendChild(btn);
+
+        const panel = document.getElementById("panel-" + v.key);
+        panel.innerHTML = RENDERERS[v.key]();
+      });
+
+      const hash = location.hash.replace("#", "");
+      if (VIEWS.some(v => v.key === hash)) switchView(hash);
+      else document.getElementById("panel-channel-pull").classList.add("active");
+    }
+
+    init();
+  </script>
+</body>
+</html>

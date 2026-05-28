@@ -316,8 +316,61 @@ const Interactions = (() => {
     const pageId = getActivePageId();
 
     if (/^\+|新建|新增|创建/.test(label)) {
+      if (pageId === 'ord-ship-addr') {
+        openEntityCreate(pageId, '新增发货地址');
+        return;
+      }
+      if (pageId === 'ord-wave-strategy') {
+        openDrawer('新增波次策略', [
+          { label: '策略名称', required: true },
+          { label: '波次类型', type: 'select', options: ['普通', '合单'] },
+          { label: '规则说明', type: 'textarea', placeholder: '如：同门店+同渠道' },
+          { label: '每批上限', type: 'number', value: '50' },
+        ], {
+          onSave: (f) => DataStore.genericUpsert('waveStrategies', {
+            name: f['策略名称'], waveType: f['波次类型'], ruleDesc: f['规则说明'],
+            maxOrders: parseInt(f['每批上限'], 10) || 50, enabled: true, sort: 99,
+          }, true),
+        });
+        return;
+      }
       openEntityCreate(pageId, label.replace(/^\+?\s*/, ''));
       return;
+    }
+
+    if (/拉取美团/.test(label)) return applyResult(DataStore.pullChannelOrders('美团'));
+    if (/拉取饿了么/.test(label)) return applyResult(DataStore.pullChannelOrders('饿了么'));
+    if (/拉取京东/.test(label)) return applyResult(DataStore.pullChannelOrders('京东'));
+    if (label === '自动合单') return applyResult(DataStore.autoMergeOrders());
+    if (label === '生成波次') return applyResult(DataStore.generateWave());
+    if (label === '合单波次生成') return applyResult(DataStore.generateMergedWave());
+    if (label === '批量请货') {
+      const items = DataStore.getState().waveItems.filter((w) => w.status === '未请货');
+      items.forEach((wi) => DataStore.requestGoods(wi.id, wi.requestQty));
+      refreshCurrentPage();
+      toast(`已批量请货 ${items.length} 条`, 'success');
+      return;
+    }
+    if (label === '管理发货地址') {
+      switchPage('ord-ship-addr');
+      return;
+    }
+    if (typeof Phase1Data !== 'undefined') {
+      if (label === '生成今日建议') return applyResult(Phase1Data.generateSuggestions(DataStore.getState()));
+      if (label === '一键转采购') return applyResult(Phase1Data.convertToPurchase(DataStore.getState()));
+      if (label === '拉取三平台销量') return applyResult(Phase1Data.pullSalesData(DataStore.getState()));
+      if (label === '自动比对') return applyResult(Phase1Data.runThreeWayMatch(DataStore.getState()));
+      if (label === '生成对账单') return applyResult(Phase1Data.generateStatement(DataStore.getState()));
+      if (label === '推送供应商' || label === '批量推送') return applyResult(Phase1Data.pushStatement(DataStore.getState()));
+      if (label === '计算应返') return applyResult(Phase1Data.calcRebate(DataStore.getState()));
+      if (label === '一键同步三平台') return applyResult(Phase1Data.syncThreePlatforms(DataStore.getState()));
+      if (label === '立即对账' || label === '自动修正' || label === '库存对账') return applyResult(Phase1Data.reconcilePlatformInv(DataStore.getState()));
+      if (label === '立即备份') {
+        DataStore.getState().backupRecords.unshift({ id: `BK${Date.now()}`, time: DataStore.nowStr(), size: '2.4 GB', retainDays: 90, status: '成功' });
+        DataStore.persist();
+        refreshCurrentPage();
+        return toast('备份已完成', 'success');
+      }
     }
 
     if (/同步|立即同步|启动/.test(label)) {
@@ -369,6 +422,125 @@ const Interactions = (() => {
   function handleRowAction(action, row) {
     const { entity, id } = getRowContext(row);
     const s = DataStore.getState();
+
+    if (entity === 'channelOrders') {
+      if (action === '锁单') return applyResult(DataStore.toggleLockChannelOrder(id));
+      if (action === '解锁') return applyResult(DataStore.toggleLockChannelOrder(id));
+      if (action === '合单') return applyResult(DataStore.autoMergeOrders());
+      if (action === '详情') return openEntityDetail('channelOrders', id);
+    }
+
+    if (entity === 'mergedGroups') {
+      if (action === '合单波次生成') return applyResult(DataStore.generateMergedWave());
+      if (action === '详情') return openEntityDetail('mergedGroups', id);
+    }
+
+    if (entity === 'waveStrategies') {
+      if (action === '生成波次') return applyResult(DataStore.generateWave(id));
+      if (action === '编辑') return openEntityEdit('waveStrategies', id);
+      if (/启用|停用/.test(action)) {
+        const ws = s.waveStrategies.find((x) => x.id === id);
+        if (ws) { ws.enabled = action === '启用'; DataStore.persist(); }
+        return applyResult({ ok: true, msg: `策略已${action}` });
+      }
+    }
+
+    if (entity === 'waves') {
+      if (action === '请货') {
+        const items = s.waveItems.filter((wi) => wi.waveId === id && wi.status === '未请货');
+        items.forEach((wi) => DataStore.requestGoods(wi.id, wi.requestQty));
+        refreshCurrentPage();
+        return toast(`波次 ${id} 已请货 ${items.length} 条`, 'success');
+      }
+      if (action === '查看明细') {
+        DataStore.setWaveTab('全部');
+        switchPage('ord-pick-ship');
+        return;
+      }
+      if (action === '详情') return openEntityDetail('waves', id);
+    }
+
+    if (entity === 'waveItems') {
+      const wi = s.waveItems.find((x) => x.id === id);
+      if (action === '请货') {
+        return openDrawer('请货', [
+          { label: '请货数量', type: 'number', required: true, value: wi?.requestQty || 1 },
+        ], { onSave: (f) => DataStore.requestGoods(id, f['请货数量']) });
+      }
+      if (action === '确认拣货') return applyResult(DataStore.confirmPick(id));
+      if (action === '回库') return confirmDialog('回库确认', '确定将库存回库？', () => applyResult(DataStore.returnToStock(id)));
+      if (action === '生成快递单') return applyResult(DataStore.generateWaybill(id));
+      if (/打包|打印面单/.test(action)) {
+        if (!wi?.waybillNo) return toast('请先生成快递单', 'error');
+        return toast(`${action}完成`, 'success');
+      }
+      if (action === '出库') return applyResult(DataStore.confirmOutbound(id));
+      if (action === '详情') return openEntityDetail('waveItems', id);
+    }
+
+    if (entity === 'shipAddresses') {
+      if (action === '编辑') return openEntityEdit('shipAddresses', id);
+      if (action === '设为默认') {
+        s.shipAddresses.forEach((a) => { a.isDefault = a.id === id; });
+        DataStore.persist();
+        return applyResult({ ok: true, msg: '已设为默认发货地址' });
+      }
+      if (action === '删除') return confirmDialog('删除地址', '确定删除？', () => applyResult(DataStore.genericRemove('shipAddresses', id)));
+    }
+
+    if (entity === 'poApprovals') {
+      if (action === '审批') {
+        const p = s.poApprovals.find((x) => x.id === id);
+        if (p) { p.status = '已审核'; DataStore.persist(); }
+        return applyResult({ ok: true, msg: '采购单审批通过' });
+      }
+      if (action === '驳回') {
+        const p = s.poApprovals.find((x) => x.id === id);
+        if (p) { p.status = '已驳回'; DataStore.persist(); }
+        return applyResult({ ok: true, msg: '已驳回' });
+      }
+      if (action === '详情') return openEntityDetail('poApprovals', id);
+    }
+    if (entity === 'replenishSuggestions') {
+      if (action === '通过') {
+        const r = s.replenishSuggestions.find((x) => x.id === id);
+        if (r) { r.status = '已通过'; DataStore.persist(); }
+        return applyResult({ ok: true, msg: '建议单已通过' });
+      }
+      if (action === '转采购') return applyResult(Phase1Data.convertToPurchase(s));
+      if (action === '调整数量') {
+        const r = s.replenishSuggestions.find((x) => x.id === id);
+        return openDrawer('调整建议数量', [{ label: '建议数量', type: 'number', value: r?.suggestQty || 1 }], {
+          onSave: (f) => { if (r) { r.suggestQty = parseInt(f['建议数量'], 10) || r.suggestQty; DataStore.persist(); } return { ok: true, msg: '已调整' }; },
+        });
+      }
+    }
+    if (entity === 'supplierStatements' && action === '推送供应商') return applyResult(Phase1Data.pushStatement(s, id));
+    if (entity === 'supplierPortalConfirms') {
+      if (action === '模拟确认') {
+        const c = s.supplierPortalConfirms.find((x) => x.id === id);
+        if (c) { c.confirmStatus = '已确认'; c.feedback = '供应商已确认'; DataStore.persist(); }
+        return applyResult({ ok: true, msg: '供应商已在线确认' });
+      }
+      if (action === '差异反馈') {
+        return openDrawer('差异反馈', [{ label: '差异说明', type: 'textarea', required: true }], {
+          onSave: (f) => {
+            const c = s.supplierPortalConfirms.find((x) => x.id === id);
+            if (c) { c.confirmStatus = '有异议'; c.feedback = f['差异说明']; DataStore.persist(); }
+            return { ok: true, msg: '差异已回流至采购员' };
+          },
+        });
+      }
+    }
+    if (entity === 'platformShelf') {
+      if (/上架|下架/.test(action)) {
+        const p = s.platformShelf.find((x) => x.id === id);
+        if (p) { p.shelfStatus = action === '上架' ? '上架' : '下架'; DataStore.persist(); }
+        return applyResult({ ok: true, msg: `平台${action}成功` });
+      }
+      if (action === '重试') return applyResult(Phase1Data.syncThreePlatforms(s));
+    }
+    if (entity === 'platformInvDiffs' && action === '修正') return applyResult(Phase1Data.reconcilePlatformInv(s));
 
     if (entity === 'orders') {
       if (action === '拣货') return applyResult(DataStore.pickOrder(id));
@@ -759,6 +931,51 @@ const Interactions = (() => {
     if (todoLink) {
       e.preventDefault();
       handleTodoAction(todoLink);
+      return;
+    }
+
+    if (target.matches('[data-phase1-action]')) {
+      e.preventDefault();
+      const act = target.dataset.phase1Action;
+      const map = {
+        'three-match': () => Phase1Data.runThreeWayMatch(DataStore.getState()),
+        'sync-platforms': () => Phase1Data.syncThreePlatforms(DataStore.getState()),
+      };
+      applyResult(map[act]?.());
+      return;
+    }
+
+    const phase1Goto = target.closest('[data-goto-page]');
+    if (phase1Goto && phase1Goto.classList.contains('phase1-goto')) {
+      e.preventDefault();
+      switchPage(phase1Goto.dataset.gotoPage);
+      return;
+    }
+
+    const workflowNode = target.closest('.workflow-node[data-goto-page]');
+    if (workflowNode) {
+      e.preventDefault();
+      switchPage(workflowNode.dataset.gotoPage);
+      return;
+    }
+
+    if (target.matches('[data-workflow-action]')) {
+      e.preventDefault();
+      const act = target.dataset.workflowAction;
+      const map = {
+        'pull-all': () => DataStore.pullChannelOrders('全部'),
+        'auto-merge': () => DataStore.autoMergeOrders(),
+        'gen-wave': () => DataStore.generateWave(),
+        'gen-merge-wave': () => DataStore.generateMergedWave(),
+      };
+      applyResult(map[act]?.());
+      return;
+    }
+
+    if (target.matches('.wave-tab')) {
+      e.preventDefault();
+      DataStore.setWaveTab(target.dataset.waveTab);
+      refreshCurrentPage();
       return;
     }
 

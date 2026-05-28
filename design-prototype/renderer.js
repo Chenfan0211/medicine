@@ -208,11 +208,21 @@ function renderPage(pageId) {
     case 'tree-list':
       return renderTreeListPage(pageId, page);
     case 'form-cards':
+      if (pageId === 'm2-replen-config' && typeof renderM2ReplenConfigCards === 'function') return renderFormCards(renderM2ReplenConfigCards());
+      if (pageId === 'm3-inv-sync-config' && typeof renderM3InvSyncConfigCards === 'function') return renderFormCards(renderM3InvSyncConfigCards());
       if (pageId === 'sys-config' && typeof renderSysConfigCards === 'function') return renderFormCards(renderSysConfigCards());
       if (pageId === 'chn-config' && typeof renderChannelConfigCards === 'function') return renderFormCards(renderChannelConfigCards());
       return renderFormCards(page.cards);
     case 'map':
       return renderMap(pageId, page);
+    case 'phase1-overview':
+      return typeof renderPhase1Overview === 'function' ? renderPhase1Overview() : '';
+    case 'phase1-dashboard':
+      return typeof renderPhase1Dashboard === 'function' ? renderPhase1Dashboard(page.dashboardKind) : '';
+    case 'workflow':
+      return typeof renderOrderWorkflow === 'function' ? renderOrderWorkflow() : '';
+    case 'wave-manage':
+      return typeof renderWaveManagePage === 'function' ? renderWaveManagePage(pageId, page) : renderListPage(pageId, page);
     case 'report':
       return renderReport(pageId, page);
     default:

@@ -243,6 +243,69 @@ const PAGES = {
     total: 23,
   },
 
+  /* ========== 订单履约流程 ========== */
+  'ord-workflow': {
+    type: 'workflow',
+    breadcrumb: '订单管理 / 履约流程',
+  },
+  'ord-channel-pool': {
+    type: 'list',
+    breadcrumb: '订单管理 / 渠道订单池',
+    search: [
+      { label: '渠道', type: 'select', options: ['全部', '美团', '饿了么', '京东'] },
+      { label: '门店', type: 'select', options: ['全部门店', '朝阳店', '海淀店', '西城店'] },
+      { label: '状态', type: 'select', options: ['全部', '已拉取', '已锁单', '已合单', '波次中'] },
+    ],
+    toolbar: ['拉取美团', '拉取饿了么', '拉取京东', '自动合单', '生成波次'],
+    columns: ['渠道单号', '平台订单号', '渠道', '门店', '收货人', '手机', '商品摘要', '金额', '履约状态', '操作'],
+    total: 0,
+  },
+  'ord-merge': {
+    type: 'list',
+    breadcrumb: '订单管理 / 合单管理',
+    search: [{ label: '手机号', width: 160 }, { label: '状态', type: 'select', options: ['全部', '待波次', '已入波次'] }],
+    toolbar: ['自动合单', '合单波次生成'],
+    columns: ['合单组号', '手机号', '收货地址', '商品摘要', '合并单数', '状态', '创建时间', '操作'],
+    total: 0,
+  },
+  'ord-wave-strategy': {
+    type: 'list',
+    breadcrumb: '订单管理 / 波次策略',
+    toolbar: ['+ 新增策略'],
+    columns: ['策略名称', '波次类型', '规则说明', '每批上限', '排序', '状态', '操作'],
+    total: 0,
+  },
+  'ord-wave': {
+    type: 'wave-manage',
+    breadcrumb: '订单管理 / 波次管理',
+    search: [
+      { label: '波次号', width: 160 },
+      { label: '门店', type: 'select', options: ['全部门店', '朝阳店', '海淀店'] },
+      { label: '渠道', type: 'select', options: ['全部', '美团', '饿了么', '京东'] },
+    ],
+    toolbar: ['生成波次', '合单波次生成'],
+    columns: ['波次号', '波次类型', '门店', '渠道', '订单数', 'ERP库存', '波次状态', '创建时间', '操作'],
+    total: 0,
+  },
+  'ord-pick-ship': {
+    type: 'list',
+    breadcrumb: '订单管理 / 拣货出库',
+    search: [
+      { label: '订单号', width: 160 },
+      { label: '状态', type: 'select', options: ['全部', '未请货', '已请货', '已拣货', '已出库', '异常'] },
+    ],
+    toolbar: ['批量请货', '管理发货地址'],
+    columns: ['波次号', '订单号', '渠道', '门店', '商品', '请货数', '拣货数', '快递单号', '状态', '操作'],
+    total: 0,
+  },
+  'ord-ship-addr': {
+    type: 'list',
+    breadcrumb: '订单管理 / 发货地址',
+    toolbar: ['+ 新增地址'],
+    columns: ['门店', '联系人', '电话', '省', '市', '详细地址', '默认', '状态', '操作'],
+    total: 0,
+  },
+
   /* ========== 订单管理 ========== */
   'ord-list': {
     type: 'list',

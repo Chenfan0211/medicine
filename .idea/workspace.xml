@@ -4,8 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="924fde03-0fb5-46b7-b6cb-e7683f171558" name="Changes" comment="第一次测试提交代码">
+    <list default="true" id="924fde03-0fb5-46b7-b6cb-e7683f171558" name="Changes" comment="提交UI原型代码">
+      <change afterPath="$PROJECT_DIR$/design-prototype/phase1-data.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/design-prototype/phase1-pages.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/design-prototype/phase1-render.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/design-prototype/phase1-ui.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/design-prototype/workflow-ui.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/requirements-analysis.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/zhihe-erp-mindmap.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/副本智合ERP一期-功能清单说明（合同附件）.docx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/智合医药即时零售ERP中台-一期技术方案(1).docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/data-store.js" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/data-store.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/entity-render.js" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/entity-render.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/form-schemas.js" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/form-schemas.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/interactions.js" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/interactions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/menu-config.js" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/menu-config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/pages-config.js" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/pages-config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/renderer.js" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/renderer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/design-prototype/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/design-prototype/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,6 +32,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="3EKpKAkBFQna8kygk6cET0srx64" />
   <component name="ProjectViewState">
@@ -25,6 +46,8 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "last_directory_selection": "G:/workProject/medicine/design-prototype",
+    "last_opened_file_path": "G:/workProject/medicine/design-prototype",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -32,6 +55,13 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="G:\workProject\medicine\design-prototype" />
+      <recent name="G:\workProject\medicine\docs" />
+      <recent name="G:\workProject\medicine" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -40,7 +70,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1779937049122</updated>
-      <workItem from="1779937050809" duration="1237000" />
+      <workItem from="1779937050809" duration="2938000" />
     </task>
     <task id="LOCAL-00001" summary="第一次测试提交代码">
       <option name="closed" value="true" />
@@ -50,7 +80,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779937105955</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="提交UI原型代码">
+      <option name="closed" value="true" />
+      <created>1779938832547</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1779938832547</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -81,6 +119,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="第一次测试提交代码" />
-    <option name="LAST_COMMIT_MESSAGE" value="第一次测试提交代码" />
+    <MESSAGE value="提交UI原型代码" />
+    <option name="LAST_COMMIT_MESSAGE" value="提交UI原型代码" />
   </component>
 </project>

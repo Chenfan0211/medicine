@@ -91,6 +91,34 @@ const DataStore = (() => {
         { id: 'DEL20260528001', orderId: 'ORD202605280002', storeName: '海淀店', mode: '达达', rider: '骑手张', status: '配送中', eta: '11:00' },
         { id: 'DEL20260528002', orderId: 'ORD202605280001', storeName: '朝阳店', mode: '自配送', rider: '店员李', status: '待接单', eta: '10:50' },
       ],
+      channelOrders: [
+        { id: 'CHO001', orderId: 'ORD202605280001', channel: '美团', storeName: '朝阳店', receiver: '张伟', phone: '13812345678', address: '朝阳区建国路100号', skuSummary: '阿莫西林胶囊×2', skuId: 'SKU10086001', qty: 2, amount: 128.5, locked: false, mergeGroupId: null, waveId: null, fulfillStatus: '已拉取', pulledAt: '2026-05-28 10:32' },
+        { id: 'CHO002', orderId: 'ORD202605280010', channel: '饿了么', storeName: '朝阳店', receiver: '刘洋', phone: '13812345678', address: '朝阳区建国路100号', skuSummary: '布洛芬缓释胶囊×1', skuId: 'SKU10086002', qty: 1, amount: 18.5, locked: false, mergeGroupId: null, waveId: null, fulfillStatus: '已拉取', pulledAt: '2026-05-28 10:28' },
+        { id: 'CHO003', orderId: 'ORD202605280011', channel: '京东', storeName: '海淀店', receiver: '陈静', phone: '13912341234', address: '海淀区中关村大街50号', skuSummary: '连花清瘟胶囊×3', skuId: 'SKU10086003', qty: 3, amount: 84, locked: true, mergeGroupId: null, waveId: null, fulfillStatus: '已锁单', pulledAt: '2026-05-28 10:20' },
+        { id: 'CHO004', orderId: 'ORD202605280012', channel: '美团', storeName: '朝阳店', receiver: '周杰', phone: '13611112222', address: '朝阳区建国路88号', skuSummary: '布洛芬缓释胶囊×2', skuId: 'SKU10086002', qty: 2, amount: 37, locked: false, mergeGroupId: 'MG001', waveId: null, fulfillStatus: '已合单', pulledAt: '2026-05-28 09:50' },
+      ],
+      mergedGroups: [
+        { id: 'MG001', phone: '13812345678', address: '朝阳区建国路100号', skuSummary: '布洛芬+阿莫西林', orderCount: 2, channelOrderIds: ['CHO001', 'CHO002'], status: '待波次', createdAt: '2026-05-28 10:35' },
+      ],
+      waveStrategies: [
+        { id: 'WS1', name: '同门店同渠道波次', ruleDesc: '相同门店+相同渠道，每批最多50单', maxOrders: 50, waveType: '普通', enabled: true, sort: 1 },
+        { id: 'WS2', name: '合单波次策略', ruleDesc: '已合单订单独立生成波次', maxOrders: 30, waveType: '合单', enabled: true, sort: 2 },
+        { id: 'WS3', name: '紧急订单波次', ruleDesc: '下单超过30分钟未处理优先', maxOrders: 20, waveType: '普通', enabled: false, sort: 3 },
+      ],
+      waves: [
+        { id: 'WV20260528001', waveNo: 'WV20260528001', waveType: '普通', storeName: '朝阳店', channel: '美团', orderCount: 2, status: '未请货', erpStockOk: true, strategyId: 'WS1', createdAt: '2026-05-28 11:00' },
+        { id: 'WV20260528002', waveNo: 'WV20260528002', waveType: '合单', storeName: '朝阳店', channel: '饿了么', orderCount: 1, status: '已拣货', erpStockOk: true, strategyId: 'WS2', createdAt: '2026-05-28 10:45' },
+      ],
+      waveItems: [
+        { id: 'WI001', waveId: 'WV20260528001', channelOrderId: 'CHO004', orderId: 'ORD202605280012', channel: '美团', storeName: '朝阳店', skuName: '布洛芬缓释胶囊', skuId: 'SKU10086002', requestQty: 2, pickedQty: 0, waybillNo: '', status: '未请货' },
+        { id: 'WI002', waveId: 'WV20260528002', channelOrderId: 'CHO004', orderId: 'ORD202605280012', channel: '美团', storeName: '朝阳店', skuName: '布洛芬缓释胶囊', skuId: 'SKU10086002', requestQty: 2, pickedQty: 2, waybillNo: 'SF1234567890', status: '已拣货' },
+        { id: 'WI003', waveId: 'WV20260528001', channelOrderId: 'CHO003', orderId: 'ORD202605280011', channel: '京东', storeName: '海淀店', skuName: '连花清瘟胶囊', skuId: 'SKU10086003', requestQty: 3, pickedQty: 0, waybillNo: '', status: '异常' },
+      ],
+      shipAddresses: [
+        { id: 'SA1', storeName: '朝阳店', contact: '赵店长', phone: '010-66661001', province: '北京市', city: '朝阳区', address: '建国路88号智合医药', isDefault: true, status: '启用' },
+        { id: 'SA2', storeName: '海淀店', contact: '钱店长', phone: '010-66661002', province: '北京市', city: '海淀区', address: '中关村大街1号', isDefault: true, status: '启用' },
+      ],
+      waveTab: '全部',
       channelSyncLogs: [
         { id: 'CSL1', taskId: 'SYNC20260528002', channel: '饿了么', type: '商品', target: 'SKU10086002', success: false, error: '类目不匹配', time: '2026-05-28 07:31' },
       ],
@@ -230,6 +258,8 @@ const DataStore = (() => {
     if (!saved.pageFilters) saved.pageFilters = {};
     if (!saved.pageNum) saved.pageNum = {};
     if (!saved.deliveryRanges) saved.deliveryRanges = fresh.deliveryRanges;
+    if (saved.waveTab === undefined) saved.waveTab = '全部';
+    if (typeof Phase1Data !== 'undefined') Phase1Data.mergeSeed(saved, fresh);
     return saved;
   }
 
@@ -238,7 +268,9 @@ const DataStore = (() => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return mergeSeed(JSON.parse(raw), seed());
     } catch (_) {}
-    return seed();
+    const s = seed();
+    if (typeof Phase1Data !== 'undefined') Phase1Data.mergeSeed(s, seed());
+    return s;
   }
 
   function persist() {
@@ -747,6 +779,218 @@ const DataStore = (() => {
       .sort((a, b) => (a.sort || 0) - (b.sort || 0));
   }
 
+  function getActiveDeliveryTrack() {
+    const d = state.deliveries.find((x) => x.status === '配送中') || state.deliveries[0];
+    if (!d) return null;
+    const o = state.orders.find((x) => x.id === d.orderId);
+    return { delivery: d, order: o };
+  }
+
+  /* ========== 渠道订单履约流程 ========== */
+  function getFulfillStats() {
+    const pooled = (state.channelOrders || []).filter((c) => !c.waveId).length;
+    const locked = (state.channelOrders || []).filter((c) => c.locked).length;
+    const merged = (state.mergedGroups || []).length;
+    const waves = (state.waves || []).length;
+    const unrequested = (state.waves || []).filter((w) => w.status === '未请货').length;
+    const picked = (state.waveItems || []).filter((w) => w.status === '已拣货').length;
+    const returnStock = (state.waveItems || []).filter((w) => w.status === '异常').length;
+    const pulled = (state.channelOrders || []).length;
+    return { pooled, locked, merged, waves, unrequested, picked, returnStock, pulled };
+  }
+
+  function pullChannelOrders(channel) {
+    const channels = channel === '全部' ? ['美团', '饿了么', '京东'] : [channel];
+    let count = 0;
+    channels.forEach((ch) => {
+      const id = uid('CHO');
+      state.channelOrders.unshift({
+        id, orderId: uid('ORD'), channel: ch, storeName: '朝阳店',
+        receiver: '新客', phone: '138' + Math.floor(Math.random() * 100000000).toString().padStart(8, '0'),
+        address: '朝阳区示例地址', skuSummary: '布洛芬缓释胶囊×1', skuId: 'SKU10086002', qty: 1,
+        amount: 18.5, locked: false, mergeGroupId: null, waveId: null, fulfillStatus: '已拉取', pulledAt: nowStr(),
+      });
+      count += 1;
+    });
+    addOperLog('订单履约', `拉取${channel}订单 ${count} 条`);
+    persist();
+    return { ok: true, msg: `已拉取 ${count} 条渠道订单` };
+  }
+
+  function toggleLockChannelOrder(id) {
+    const c = state.channelOrders.find((x) => x.id === id);
+    if (!c) return { ok: false, msg: '订单不存在' };
+    if (c.waveId) return { ok: false, msg: '已入波次订单不可锁单' };
+    c.locked = !c.locked;
+    c.fulfillStatus = c.locked ? '已锁单' : '已拉取';
+    addOperLog('订单履约', `${c.locked ? '锁单' : '解锁'} ${c.orderId}`);
+    persist();
+    return { ok: true, msg: c.locked ? '订单已锁定，不参与波次' : '订单已解锁' };
+  }
+
+  function autoMergeOrders() {
+    const pool = state.channelOrders.filter((c) => !c.locked && !c.waveId && !c.mergeGroupId);
+    const map = {};
+    pool.forEach((c) => {
+      const key = `${c.phone}|${c.address}|${c.skuId}`;
+      if (!map[key]) map[key] = [];
+      map[key].push(c);
+    });
+    let merged = 0;
+    Object.values(map).forEach((group) => {
+      if (group.length < 2) return;
+      const mg = {
+        id: uid('MG'), phone: group[0].phone, address: group[0].address,
+        skuSummary: group.map((g) => g.skuSummary).join('+'), orderCount: group.length,
+        channelOrderIds: group.map((g) => g.id), status: '待波次', createdAt: nowStr(),
+      };
+      state.mergedGroups.unshift(mg);
+      group.forEach((c) => { c.mergeGroupId = mg.id; c.fulfillStatus = '已合单'; });
+      merged += 1;
+    });
+    addOperLog('订单履约', `自动合单 ${merged} 组`);
+    persist();
+    return { ok: true, msg: merged ? `已合并 ${merged} 组订单` : '暂无可合单订单（需相同手机+地址+商品）' };
+  }
+
+  function generateWave(strategyId) {
+    const strategy = state.waveStrategies.find((s) => s.id === strategyId) || state.waveStrategies.find((s) => s.enabled && s.waveType === '普通');
+    const candidates = state.channelOrders.filter((c) => !c.locked && !c.waveId && !c.mergeGroupId);
+    if (!candidates.length) return { ok: false, msg: '无可用订单（锁定/已合单/已入波次除外）' };
+    const batch = candidates.slice(0, strategy?.maxOrders || 50);
+    const waveId = uid('WV');
+    const wave = {
+      id: waveId, waveNo: waveId, waveType: '普通', storeName: batch[0].storeName, channel: batch[0].channel,
+      orderCount: batch.length, status: '未请货', erpStockOk: true, strategyId: strategy?.id, createdAt: nowStr(),
+    };
+    state.waves.unshift(wave);
+    batch.forEach((c) => {
+      c.waveId = waveId;
+      c.fulfillStatus = '波次中';
+      state.waveItems.unshift({
+        id: uid('WI'), waveId, channelOrderId: c.id, orderId: c.orderId, channel: c.channel,
+        storeName: c.storeName, skuName: c.skuSummary.split('×')[0], skuId: c.skuId,
+        requestQty: c.qty, pickedQty: 0, waybillNo: '', status: '未请货',
+      });
+    });
+    addOperLog('订单履约', `生成波次 ${waveId}，${batch.length} 单`);
+    persist();
+    return { ok: true, msg: `波次 ${waveId} 已生成，${batch.length} 单进入未请货` };
+  }
+
+  function generateMergedWave() {
+    const groups = state.mergedGroups.filter((g) => g.status === '待波次');
+    if (!groups.length) return { ok: false, msg: '暂无待波次的合单组' };
+    const g = groups[0];
+    const waveId = uid('WV');
+    state.waves.unshift({
+      id: waveId, waveNo: waveId, waveType: '合单', storeName: '朝阳店', channel: '美团',
+      orderCount: g.orderCount, status: '未请货', erpStockOk: true, strategyId: 'WS2', createdAt: nowStr(),
+    });
+    g.channelOrderIds.forEach((cid) => {
+      const c = state.channelOrders.find((x) => x.id === cid);
+      if (c) { c.waveId = waveId; c.fulfillStatus = '波次中'; }
+      state.waveItems.unshift({
+        id: uid('WI'), waveId, channelOrderId: cid, orderId: c?.orderId || cid, channel: c?.channel || '美团',
+        storeName: c?.storeName || '朝阳店', skuName: c?.skuSummary?.split('×')[0] || '商品',
+        skuId: c?.skuId, requestQty: c?.qty || 1, pickedQty: 0, waybillNo: '', status: '未请货',
+      });
+    });
+    g.status = '已入波次';
+    addOperLog('订单履约', `合单波次 ${waveId}`);
+    persist();
+    return { ok: true, msg: `合单波次 ${waveId} 已生成` };
+  }
+
+  function requestGoods(waveItemId, qty) {
+    const wi = state.waveItems.find((x) => x.id === waveItemId);
+    if (!wi) return { ok: false, msg: '波次明细不存在' };
+    if (wi.status !== '未请货') return { ok: false, msg: '当前状态不可请货' };
+    const n = parseInt(qty, 10) || wi.requestQty;
+    wi.requestQty = n;
+    const st = state.stocks.find((s) => s.skuId === wi.skuId && s.storeName === wi.storeName);
+    if (st && st.qty < n) {
+      wi.status = '异常';
+      addOperLog('订单履约', `请货失败-库存不足 ${wi.orderId}`);
+      persist();
+      return { ok: false, msg: 'ERP 库存不足，已标记异常' };
+    }
+    wi.status = '已请货';
+    const wave = state.waves.find((w) => w.id === wi.waveId);
+    if (wave && wave.status === '未请货') wave.status = '已请货';
+    addOperLog('订单履约', `请货 ${wi.orderId} ×${n}`);
+    persist();
+    return { ok: true, msg: `请货成功，数量 ${n}，等待 ERP 拣货回传` };
+  }
+
+  function confirmPick(waveItemId) {
+    const wi = state.waveItems.find((x) => x.id === waveItemId);
+    if (!wi || wi.status !== '已请货') return { ok: false, msg: '请先完成请货' };
+    wi.pickedQty = wi.requestQty;
+    wi.status = '已拣货';
+    const st = state.stocks.find((s) => s.skuId === wi.skuId && s.storeName === wi.storeName);
+    if (st) {
+      st.qty = Math.max(0, st.qty - wi.pickedQty);
+      st.lockQty = Math.max(0, st.lockQty - wi.pickedQty);
+      state.stockLogs.unshift({
+        id: uid('LOG'), storeName: wi.storeName, skuId: wi.skuId, type: '出库',
+        change: -wi.pickedQty, afterQty: st.qty, refNo: wi.orderId, operator: localStorage.getItem('zhihe-erp-user') || 'admin', time: nowStr(),
+      });
+    }
+    const wave = state.waves.find((w) => w.id === wi.waveId);
+    if (wave) wave.status = '已拣货';
+    addOperLog('订单履约', `拣货成功 ${wi.orderId}`);
+    persist();
+    return { ok: true, msg: 'ERP 拣货成功，进入已拣货' };
+  }
+
+  function returnToStock(waveItemId) {
+    const wi = state.waveItems.find((x) => x.id === waveItemId);
+    if (!wi) return { ok: false, msg: '记录不存在' };
+    const st = state.stocks.find((s) => s.skuId === wi.skuId && s.storeName === wi.storeName);
+    const qty = wi.pickedQty || wi.requestQty;
+    if (st && wi.pickedQty > 0) {
+      st.qty += qty;
+      state.stockLogs.unshift({
+        id: uid('LOG'), storeName: wi.storeName, skuId: wi.skuId, type: '入库',
+        change: qty, afterQty: st.qty, refNo: '回库-' + wi.orderId, operator: localStorage.getItem('zhihe-erp-user') || 'admin', time: nowStr(),
+      });
+    }
+    wi.status = '已回库';
+    wi.pickedQty = 0;
+    addOperLog('订单履约', `回库 ${wi.orderId}`);
+    persist();
+    return { ok: true, msg: '已回库，库存已释放' };
+  }
+
+  function generateWaybill(waveItemId) {
+    const wi = state.waveItems.find((x) => x.id === waveItemId);
+    if (!wi || wi.status !== '已拣货') return { ok: false, msg: '仅已拣货订单可生成快递单' };
+    wi.waybillNo = 'SF' + Date.now().toString().slice(-10);
+    addOperLog('订单履约', `生成快递单 ${wi.waybillNo}`);
+    persist();
+    return { ok: true, msg: `快递单号：${wi.waybillNo}` };
+  }
+
+  function confirmOutbound(waveItemId) {
+    const wi = state.waveItems.find((x) => x.id === waveItemId);
+    if (!wi) return { ok: false, msg: '记录不存在' };
+    if (!wi.waybillNo) return { ok: false, msg: '请先生成快递单' };
+    wi.status = '已出库';
+    const wave = state.waves.find((w) => w.id === wi.waveId);
+    if (wave) wave.status = '已出库';
+    const o = state.orders.find((x) => x.id === wi.orderId);
+    if (o) o.status = '配送中';
+    addOperLog('订单履约', `出库 ${wi.orderId}，已推送 ERP 出库单`);
+    persist();
+    return { ok: true, msg: '出库完成，定时任务将回传 ERP 生成出库单' };
+  }
+
+  function setWaveTab(tab) {
+    state.waveTab = tab;
+    persist();
+  }
+
   function genericRemove(collection, id) {
     const arr = state[collection];
     const i = arr.findIndex((x) => x.id === id);
@@ -839,6 +1083,9 @@ const DataStore = (() => {
     mapChannelStore, unmapChannelStore, mapChannelProduct, retryProductMap, saveDeliveryRange,
     getSalesReportRows, getStockReportRows, getPurchaseReportRows, getAnalysisReportRows, getActiveDeliveryTrack,
     getDictOptions, getDictLabel, getDictItems,
+    getFulfillStats, pullChannelOrders, toggleLockChannelOrder, autoMergeOrders,
+    generateWave, generateMergedWave, requestGoods, confirmPick, returnToStock,
+    generateWaybill, confirmOutbound, setWaveTab,
     genericRemove, genericUpsert, setDrawerCtx, getDrawerCtx,
     channelTag, orderStatusTag, maskPhone, nowStr, uid,
   };
